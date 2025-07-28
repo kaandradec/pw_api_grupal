@@ -20,7 +20,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import uce.edu.ec.api.repository.modelo.Producto;
 import uce.edu.ec.api.service.IProductoServi;
-import uce.edu.ec.api.service.To.ProductoTo;
+import uce.edu.ec.api.repository.modelo.dto.ProductoTo;
 import uce.edu.ec.api.service.mapper.ProductoMapper;
 
 
@@ -39,7 +39,7 @@ public class ProductoController {
             return Response.status(Response.Status.NOT_FOUND)
                         .entity("Producto no encontrado").build();
         }
-        ProductoTo productoTo = ProductoMapper.toTo(producto);
+        ProductoTo productoTo = ProductoMapper.convertir(producto);
         return Response.ok(productoTo).build();
     }
 
@@ -48,15 +48,32 @@ public class ProductoController {
     public Response consultarTodo(@QueryParam("codigoBarras") String codigoBarras) {
 
         List<ProductoTo>productoTos = this.iProductoServi.buscarTodo(codigoBarras).stream()
-        .map(ProductoMapper::toTo).toList();
+        .map(ProductoMapper::convertir).toList();
 
         return Response.status(Response.Status.OK).entity(productoTos).build();
+    }
+
+    @GET
+    @Path("/buscar")
+    public Response buscarPorCodigoBarras(@QueryParam("codigoBarras") String codigoBarras) {
+        try {
+            List<Producto> productos = this.iProductoServi.buscarTodo(codigoBarras);
+            if (productos != null && !productos.isEmpty()) {
+                ProductoTo productoTo = ProductoMapper.convertir(productos.get(0));
+                return Response.status(Response.Status.OK).entity(productoTo).build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND).entity("Producto no encontrado").build();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @POST
     @Path("")
     public void guardar(@RequestBody ProductoTo productoTo) {
-    Producto producto = ProductoMapper.toEntity(productoTo);
+    Producto producto = ProductoMapper.convertir(productoTo);
     this.iProductoServi.guardar(producto);
     }
 
@@ -64,7 +81,7 @@ public class ProductoController {
     @Path("/{id}")
     public void actualizarPorId(@RequestBody ProductoTo productoTo, @PathParam("id") Integer id) {
     productoTo.setId(id);
-    Producto producto = ProductoMapper.toEntity(productoTo);
+    Producto producto = ProductoMapper.convertir(productoTo);
     this.iProductoServi.actualizarPorId(producto);
     }
 
