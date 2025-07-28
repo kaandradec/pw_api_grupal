@@ -25,6 +25,13 @@ public class Impuesto {
     
     @Column(name = "impu_porcentaje")
     private BigDecimal porcentaje;
+
+    public Impuesto(Integer id) {
+        this.id = id;
+    }
+
+    public Impuesto() {
+    }
     
     public Integer getId() {
         return id;
@@ -59,3 +66,14 @@ public class Impuesto {
     }
     
 }
+
+/*
+ 	INSERT INTO impuesto (impu_codigo, impu_nombre, impu_porcentaje)
+VALUES ('456', 'ICE', 10.00);
+
+INSERT INTO impuesto (impu_codigo, impu_nombre, impu_porcentaje)
+VALUES ('789', 'ISD', 5.00);
+
+	INSERT INTO impuesto (impu_codigo, impu_nombre, impu_porcentaje)
+VALUES ('123', 'IVA', 30.00);
+ */

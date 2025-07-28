@@ -1,16 +1,24 @@
 package uce.edu.ec.api.service;
 
+
 import java.util.List;
+import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import uce.edu.ec.api.repository.IProductoRepo;
+import uce.edu.ec.api.repository.modelo.Impuesto;
 import uce.edu.ec.api.repository.modelo.Producto;
+import uce.edu.ec.api.repository.modelo.ProductoImpuesto;
+import uce.edu.ec.api.service.To.ProductoTo;
+import uce.edu.ec.api.service.mapper.ProductoMapper;
 
 @ApplicationScoped
 public class ProductoServi implements IProductoServi {
     @Inject
     private IProductoRepo iProductoRepo;
+    @Inject
+    private ImpuestoService impuestoService; 
 
     @Override
     public Producto buscarPorId(Integer id) {
@@ -41,5 +49,26 @@ public class ProductoServi implements IProductoServi {
     public void guardar(Producto producto) {
       this.iProductoRepo.insertar(producto);
     }
+
+    @Override
+    public void guardarDesdeTo(ProductoTo productoTo) {
+        Producto producto = ProductoMapper.toEntity(productoTo);
+
+        if (productoTo.getImpuestos() != null && !productoTo.getImpuestos().isEmpty()) {
+            List<ProductoImpuesto> productoImpuestos = productoTo.getImpuestos().stream()
+                .map(impuestoDto -> {
+                    ProductoImpuesto pi = new ProductoImpuesto();
+                    pi.setProducto(producto);
+                    // Busca el impuesto gestionado por su ID
+                    Impuesto impuesto = impuestoService.buscarPorId(impuestoDto.getId());
+                    pi.setImpuesto(impuesto);
+                    return pi;
+                })
+                .collect(Collectors.toList());
+            producto.setImpuestos(productoImpuestos);
+        }
+
+        this.iProductoRepo.insertar(producto);
+        }
 
 }

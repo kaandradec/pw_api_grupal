@@ -4,7 +4,7 @@ import uce.edu.ec.api.repository.modelo.FacturaDetalle;
 import uce.edu.ec.api.repository.modelo.dto.FacturaDetalleTo;
 
 public class FacturaDetalleMapper {
-    
+
     public static FacturaDetalleTo convertir(FacturaDetalle detalle) {
         if (detalle == null) {
             return null;
@@ -14,7 +14,7 @@ public class FacturaDetalleMapper {
             detalle.getId(),
             detalle.getCantidad(),
             detalle.getPrecio(),
-            detalle.getSubtotal(),
+            detalle.getSubtotal()
             ProductoMapper.convertir(detalle.getProducto())
         );
     }
@@ -36,4 +36,5 @@ public class FacturaDetalleMapper {
         
         return detalle;
     }
+ 
 } 

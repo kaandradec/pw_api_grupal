@@ -5,12 +5,9 @@ import java.util.stream.Collectors;
 
 import uce.edu.ec.api.repository.modelo.Factura;
 import uce.edu.ec.api.repository.modelo.FacturaDetalle;
-import uce.edu.ec.api.repository.modelo.Cliente;
-import uce.edu.ec.api.repository.modelo.Producto;
 import uce.edu.ec.api.repository.modelo.dto.FacturaTo;
 import uce.edu.ec.api.repository.modelo.dto.FacturaDetalleTo;
 import uce.edu.ec.api.repository.modelo.dto.ClienteTo;
-import uce.edu.ec.api.repository.modelo.dto.ProductoTo;
 
 public class FacturaMapper {
     

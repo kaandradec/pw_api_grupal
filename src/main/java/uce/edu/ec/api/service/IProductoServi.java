@@ -3,6 +3,7 @@ package uce.edu.ec.api.service;
 import java.util.List;
 
 import uce.edu.ec.api.repository.modelo.Producto;
+import uce.edu.ec.api.service.To.ProductoTo;
 
 
 public interface IProductoServi {
@@ -12,4 +13,5 @@ public interface IProductoServi {
     void actualizarParcialPorId(Producto producto);
     void eliminarPorId(Integer id);
     void guardar(Producto producto);
+    void guardarDesdeTo(ProductoTo productoTo);
 }

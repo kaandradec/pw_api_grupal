@@ -2,6 +2,8 @@ package uce.edu.ec.api.repository.modelo.dto;
 
 import java.math.BigDecimal;
 
+import uce.edu.ec.api.service.To.ProductoTo;
+
 public class FacturaDetalleTo {
     private Integer id;
     private Integer cantidad;
