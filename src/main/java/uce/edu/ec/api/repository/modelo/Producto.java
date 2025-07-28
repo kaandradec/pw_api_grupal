@@ -1,12 +1,18 @@
 package uce.edu.ec.api.repository.modelo;
 
 import java.math.BigDecimal;
+import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -14,26 +20,26 @@ import jakarta.persistence.Table;
 public class Producto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "producto_id")
+    @Column(name = "prod_id")
     private Integer id;
-    @Column(name = "producto_codigoBarras")
+    @Column(name = "prod_codigo_barras")
     private String codigoBarras;
-    @Column(name = "producto_nombre")
+    @Column(name = "prod_nombre")
     private String nombre;
-    @Column(name = "producto_categoria")
+    @Column(name = "prod_categoria")
     private String categoria;
-    @Column(name = "producto_precio")
+    @Column(name = "prod_precio")
      private BigDecimal precio;
-    @Column(name = "producto_stock")
+    @Column(name = "prod_stock")
     private Integer stock;
-    // Impuestos individuales
-    @Column(name = "producto_iva")
-    private BigDecimal iva;
-    @Column(name = "producto_ice")
-    private BigDecimal ice;
-    @Column(name = "producto_isd")
-    private BigDecimal isd;
-    //S_G
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "prod_bode_id")
+    private Bodega bodega;
+    
+    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ProductoImpuesto> impuestos;
+    
     public Integer getId() {
         return id;
     }
@@ -70,23 +76,20 @@ public class Producto {
     public void setPrecio(BigDecimal precio) {
         this.precio = precio;
     }
-    public BigDecimal getIva() {
-        return iva;
+    
+    public Bodega getBodega() {
+        return bodega;
     }
-    public void setIva(BigDecimal iva) {
-        this.iva = iva;
+    
+    public void setBodega(Bodega bodega) {
+        this.bodega = bodega;
     }
-    public BigDecimal getIce() {
-        return ice;
+    
+    public List<ProductoImpuesto> getImpuestos() {
+        return impuestos;
     }
-    public void setIce(BigDecimal ice) {
-        this.ice = ice;
+    
+    public void setImpuestos(List<ProductoImpuesto> impuestos) {
+        this.impuestos = impuestos;
     }
-    public BigDecimal getIsd() {
-        return isd;
-    }
-    public void setIsd(BigDecimal isd) {
-        this.isd = isd;
-    }
- 
 }

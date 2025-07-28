@@ -68,40 +68,40 @@ public class ProductoController {
     this.iProductoServi.actualizarPorId(producto);
     }
 
-   @PATCH
-    @Path("/{id}")
-    public void actualizarParcialPorId(@RequestBody ProductoTo productoTo, @PathParam("id") Integer id) {
-        Producto productoExistente = iProductoServi.buscarPorId(id);
-        if (productoExistente == null) {
-            throw new WebApplicationException("Producto no encontrado", 404);
-        }
-        if (productoTo.getCodigoBarras() != null) {
-            productoExistente.setCodigoBarras(productoTo.getCodigoBarras());
-        }
-        if (productoTo.getNombre() != null) {
-            productoExistente.setNombre(productoTo.getNombre());
-        }
-        if (productoTo.getCategoria() != null) {
-            productoExistente.setCategoria(productoTo.getCategoria());
-        }
-        if (productoTo.getPrecio() != null) {
-            productoExistente.setPrecio(productoTo.getPrecio());
-        }
-        if (productoTo.getStock() != null) {
-            productoExistente.setStock(productoTo.getStock());
-        }
-        if (productoTo.getIva() != null) {
-         productoExistente.setIva(productoTo.getIva());
-        }   
-        if (productoTo.getIce() != null) {
-                productoExistente.setIce(productoTo.getIce());
-        }
-        if (productoTo.getIsd() != null) {
-                productoExistente.setIsd(productoTo.getIsd());
-        }
+//    @PATCH
+//     @Path("/{id}")
+//     public void actualizarParcialPorId(@RequestBody ProductoTo productoTo, @PathParam("id") Integer id) {
+//         Producto productoExistente = iProductoServi.buscarPorId(id);
+//         if (productoExistente == null) {
+//             throw new WebApplicationException("Producto no encontrado", 404);
+//         }
+//         if (productoTo.getCodigoBarras() != null) {
+//             productoExistente.setCodigoBarras(productoTo.getCodigoBarras());
+//         }
+//         if (productoTo.getNombre() != null) {
+//             productoExistente.setNombre(productoTo.getNombre());
+//         }
+//         if (productoTo.getCategoria() != null) {
+//             productoExistente.setCategoria(productoTo.getCategoria());
+//         }
+//         if (productoTo.getPrecio() != null) {
+//             productoExistente.setPrecio(productoTo.getPrecio());
+//         }
+//         if (productoTo.getStock() != null) {
+//             productoExistente.setStock(productoTo.getStock());
+//         }
+//         if (productoTo.getIva() != null) {
+//          productoExistente.setIva(productoTo.getIva());
+//         }   
+//         if (productoTo.getIce() != null) {
+//                 productoExistente.setIce(productoTo.getIce());
+//         }
+//         if (productoTo.getIsd() != null) {
+//                 productoExistente.setIsd(productoTo.getIsd());
+//         }
            
-        this.iProductoServi.actualizarParcialPorId(productoExistente);
-    }
+//         this.iProductoServi.actualizarParcialPorId(productoExistente);
+//     }
 
     @DELETE
     @Path("/{id}")
