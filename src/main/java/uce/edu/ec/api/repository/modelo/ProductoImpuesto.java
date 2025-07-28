@@ -17,11 +17,11 @@ public class ProductoImpuesto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "prin_id")
     private Integer id;
-    
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "prin_prod_id")
     private Producto producto;
-    
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "prin_impu_id")
     private Impuesto impuesto;
@@ -29,23 +29,23 @@ public class ProductoImpuesto {
     public Integer getId() {
         return id;
     }
-    
+
     public void setId(Integer id) {
         this.id = id;
     }
-    
+
     public Producto getProducto() {
         return producto;
     }
-    
+
     public void setProducto(Producto producto) {
         this.producto = producto;
     }
-    
+
     public Impuesto getImpuesto() {
         return impuesto;
     }
-    
+
     public void setImpuesto(Impuesto impuesto) {
         this.impuesto = impuesto;
     }
