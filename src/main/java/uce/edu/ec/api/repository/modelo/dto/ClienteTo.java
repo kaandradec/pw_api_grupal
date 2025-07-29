@@ -1,6 +1,11 @@
 package uce.edu.ec.api.repository.modelo.dto;
 
+
+import java.util.HashMap;
+import java.util.Map;
+
 public class ClienteTo {
+
     private Integer id;
     private String cedula;
     private String nombre;
@@ -8,23 +13,11 @@ public class ClienteTo {
     private String razonSocial;
     private String direccion;
     private String telefono;
-    private String correo;
+    private String email;
+    private Map<String,String> _links = new HashMap<>();
 
-    public ClienteTo() {
-    }
 
-    public ClienteTo(Integer id, String cedula, String nombre, String apellido, String razonSocial,
-            String direccion, String telefono, String correo) {
-        this.id = id;
-        this.cedula = cedula;
-        this.nombre = nombre;
-        this.apellido = apellido;
-        this.razonSocial = razonSocial;
-        this.direccion = direccion;
-        this.telefono = telefono;
-        this.correo = correo;
-    }
-
+    public ClienteTo(){}
     public Integer getId() {
         return id;
     }
@@ -81,11 +74,19 @@ public class ClienteTo {
         this.telefono = telefono;
     }
 
-    public String getCorreo() {
-        return correo;
+    public String getEmail() {
+        return email;
     }
 
-    public void setCorreo(String correo) {
-        this.correo = correo;
+    public void setEmail(String email) {
+        this.email = email;
     }
-} 
+
+    public Map<String, String> get_links() {
+        return _links;
+    }
+
+    public void set_links(Map<String, String> _links) {
+        this._links = _links;
+    }
+}

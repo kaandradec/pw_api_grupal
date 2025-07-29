@@ -1,7 +1,5 @@
 package uce.edu.ec.api.repository;
 
-import java.util.List;
-
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -9,12 +7,25 @@ import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 import uce.edu.ec.api.repository.modelo.Cliente;
 
-@Transactional
+import java.util.List;
+
 @ApplicationScoped
+@Transactional
 public class ClienteRepoImpl implements IClienteRepo {
 
     @PersistenceContext
     private EntityManager entityManager;
+
+    @Override
+    public Cliente buscarPorId(Integer id) {
+        return this.entityManager.find(Cliente.class, id);
+    }
+
+    @Override
+    public List<Cliente> obtenerTodos() {
+        TypedQuery<Cliente> query = this.entityManager.createQuery("FROM Cliente", Cliente.class);
+        return query.getResultList();
+    }
 
     @Override
     public void insertar(Cliente cliente) {
@@ -27,30 +38,12 @@ public class ClienteRepoImpl implements IClienteRepo {
     }
 
     @Override
-    public Cliente buscarPorId(Integer id) {
-        return this.entityManager.find(Cliente.class, id);
-    }
-
-    @Override
-    public List<Cliente> buscarTodos() {
-        TypedQuery<Cliente> query = this.entityManager
-                .createQuery("SELECT c FROM Cliente c ORDER BY c.nombre", Cliente.class);
-        return query.getResultList();
+    public void actualizarParcial(Cliente cliente) {
+        this.entityManager.merge(cliente);
     }
 
     @Override
     public void eliminar(Integer id) {
-        Cliente cliente = this.buscarPorId(id);
-        if (cliente != null) {
-            this.entityManager.remove(cliente);
-        }
+        this.entityManager.remove(this.buscarPorId(id));
     }
-
-    @Override
-    public Cliente buscarPorCedula(String cedula) {
-        TypedQuery<Cliente> query = this.entityManager
-                .createQuery("SELECT c FROM Cliente c WHERE c.cedula = :cedula", Cliente.class);
-        query.setParameter("cedula", cedula);
-        return query.getResultList().stream().findFirst().orElse(null);
-    }
-} 
+}

@@ -54,7 +54,7 @@ public class FacturaMapper {
         factura.setTotal(facturaTo.getTotal());
         
         if (facturaTo.getCliente() != null) {
-            factura.setCliente(ClienteMapper.convertir(facturaTo.getCliente()));
+            factura.setCliente(ClienteMapper.ToEntity(facturaTo.getCliente()));
         }
         
         if (facturaTo.getDetalles() != null) {

@@ -1,111 +1,107 @@
 package uce.edu.ec.api.controller;
 
-import java.util.List;
-
 import jakarta.inject.Inject;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
+import uce.edu.ec.api.repository.modelo.Cliente;
 import uce.edu.ec.api.repository.modelo.dto.ClienteTo;
 import uce.edu.ec.api.service.IClienteService;
+import uce.edu.ec.api.service.mapper.ClienteMapper;
+
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Path("/clientes")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 public class ClienteController {
 
     @Inject
-    private IClienteService iClienteService;
+    public IClienteService clienteService;
 
+    @Path("/{id}")
+    @GET
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response consultarPorId(@PathParam("id") Integer id) {
+        ClienteTo cliente = ClienteMapper.toTo(this.clienteService.buscarPorId(id));
+       return Response.status(Response.Status.ACCEPTED).entity(cliente).build();
+    }
+
+    @GET
+    @Path("")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response consultarTodos(){
+        List<ClienteTo> clientes = this.clienteService.obtenerTodos().stream().map(ClienteMapper::toTo)
+                .collect(Collectors.toList());
+        return Response.status(Response.Status.OK).entity(clientes).build();
+    }
     @POST
     @Path("")
-    public Response crear(ClienteTo clienteTo) {
-        try {
-            iClienteService.crear(clienteTo);
-            return Response.status(Response.Status.CREATED).entity("Cliente creado exitosamente").build();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Error al crear cliente: " + e.getMessage()).build();
-        }
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response guardar(@RequestBody ClienteTo clienteto){
+        Cliente cliente = ClienteMapper.ToEntity(clienteto);
+        this.clienteService.insertar(cliente);
+      return Response.status(Response.Status.ACCEPTED).entity(cliente).build();
     }
 
     @PUT
     @Path("/{id}")
-    public Response actualizar(@PathParam("id") Integer id, ClienteTo clienteTo) {
-        try {
-            clienteTo.setId(id);
-            iClienteService.actualizar(clienteTo);
-            return Response.status(Response.Status.OK).entity("Cliente actualizado exitosamente").build();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Error al actualizar cliente: " + e.getMessage()).build();
-        }
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response actualizar(@PathParam("id") Integer id, @RequestBody ClienteTo clienteto){
+        clienteto.setId(id);
+        Cliente cliente = ClienteMapper.ToEntity(clienteto);
+        this.clienteService.actualizar(cliente);
+        return Response.status(Response.Status.OK).entity(cliente).build();
     }
 
-    @GET
+    @PATCH
     @Path("/{id}")
-    public Response buscarPorId(@PathParam("id") Integer id) {
-        try {
-            ClienteTo cliente = iClienteService.buscarPorId(id);
-            if (cliente != null) {
-                return Response.status(Response.Status.OK).entity(cliente).build();
-            } else {
-                return Response.status(Response.Status.NOT_FOUND).entity("Cliente no encontrado").build();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-        }
-    }
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response actualizarParcial(@PathParam("id") Integer id, @RequestBody ClienteTo clienteTo){
+        Cliente cliente = this.clienteService.buscarPorId(id);
 
-    @GET
-    @Path("")
-    public Response buscarTodos() {
-        try {
-            List<ClienteTo> clientes = iClienteService.buscarTodos();
-            return Response.status(Response.Status.OK).entity(clientes).build();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        if(cliente.getNombre()!= null){
+            cliente.setNombre(clienteTo.getNombre());
         }
+        if(cliente.getCedula()!= null){
+            cliente.setCedula(clienteTo.getCedula());
+        }
+        if(cliente.getRazonSocial()!= null){
+            cliente.setRazonSocial(clienteTo.getRazonSocial());
+        }
+        if(cliente.getApellido()!= null){
+            cliente.setApellido(clienteTo.getApellido());
+        }
+        if(cliente.getTelefono()!= null){
+            cliente.setTelefono(clienteTo.getTelefono());
+        }
+        if(cliente.getDireccion()!= null){
+            cliente.setDireccion(clienteTo.getDireccion());
+        }
+        if (cliente.getEmail()!= null){
+            cliente.setEmail(clienteTo.getEmail());
+        }
+        if (cliente.getDireccion()!= null){
+            cliente.setDireccion(clienteTo.getDireccion());
+        }
+        this.clienteService.actualizarParcial(cliente);
+        return Response.status(Response.Status.ACCEPTED).build();
     }
 
     @DELETE
     @Path("/{id}")
-    public Response eliminar(@PathParam("id") Integer id) {
-        try {
-            iClienteService.eliminar(id);
-            return Response.status(Response.Status.OK).entity("Cliente eliminado exitosamente").build();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Error al eliminar cliente: " + e.getMessage()).build();
-        }
+    public Response borrarPorId(@PathParam("id")Integer id){
+        this.clienteService.eliminar(id);
+        return Response.status(Response.Status.OK).build();
     }
 
-    @GET
-    @Path("/buscar")
-    public Response buscarPorCedula(@QueryParam("cedula") String cedula) {
-        try {
-            ClienteTo cliente = iClienteService.buscarPorCedula(cedula);
-            if (cliente != null) {
-                return Response.status(Response.Status.OK).entity(cliente).build();
-            } else {
-                return Response.status(Response.Status.NOT_FOUND).entity("Cliente no encontrado").build();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-} 
+}

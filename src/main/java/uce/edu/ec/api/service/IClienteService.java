@@ -1,14 +1,16 @@
 package uce.edu.ec.api.service;
 
+
+import uce.edu.ec.api.repository.modelo.Cliente;
+
 import java.util.List;
 
-import uce.edu.ec.api.repository.modelo.dto.ClienteTo;
-
 public interface IClienteService {
-    void crear(ClienteTo clienteTo);
-    void actualizar(ClienteTo clienteTo);
-    ClienteTo buscarPorId(Integer id);
-    List<ClienteTo> buscarTodos();
-    void eliminar(Integer id);
-    ClienteTo buscarPorCedula(String cedula);
-} 
+
+    public Cliente buscarPorId(Integer id);
+    public List<Cliente> obtenerTodos();
+    public void insertar(Cliente cliente);
+    public void actualizar(Cliente cliente);
+    public void actualizarParcial(Cliente cliente);
+    public void eliminar(Integer id);
+}
