@@ -9,32 +9,31 @@ public class FacturaDetalleMapper {
         if (detalle == null) {
             return null;
         }
-        
+
         return new FacturaDetalleTo(
-            detalle.getId(),
-            detalle.getCantidad(),
-            detalle.getPrecio(),
-            detalle.getSubtotal()
-            ProductoMapper.convertir(detalle.getProducto())
-        );
+                detalle.getId(),
+                detalle.getCantidad(),
+                detalle.getPrecio(),
+                detalle.getSubtotal(),
+                ProductoMapper.toTo(detalle.getProducto()));
     }
-    
+
     public static FacturaDetalle convertir(FacturaDetalleTo detalleTo) {
         if (detalleTo == null) {
             return null;
         }
-        
+
         FacturaDetalle detalle = new FacturaDetalle();
         detalle.setId(detalleTo.getId());
         detalle.setCantidad(detalleTo.getCantidad());
         detalle.setPrecio(detalleTo.getPrecio());
         detalle.setSubtotal(detalleTo.getSubtotal());
-        
+
         if (detalleTo.getProducto() != null) {
-            detalle.setProducto(ProductoMapper.convertir(detalleTo.getProducto()));
+            detalle.setProducto(ProductoMapper.toEntity(detalleTo.getProducto()));
         }
-        
+
         return detalle;
     }
- 
-} 
+
+}
