@@ -3,6 +3,7 @@ package uce.edu.ec.api.service.To;
 import java.math.BigDecimal;
 import java.util.List;
 
+import uce.edu.ec.api.repository.modelo.dto.BodegaTo;
 import uce.edu.ec.api.repository.modelo.dto.ImpuestoDto;
 
 public class ProductoTo {
@@ -13,6 +14,15 @@ public class ProductoTo {
     private Integer stock;
     private BigDecimal precio;
     private List<ImpuestoDto> impuestos;
+    private BodegaTo bodega;
+
+    public BodegaTo getBodega() {
+    return bodega;
+    }
+
+    public void setBodega(BodegaTo bodega) {
+        this.bodega = bodega;
+    }
 
     public ProductoTo() {
     }

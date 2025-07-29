@@ -37,7 +37,39 @@ public class ProductoServi implements IProductoServi {
 
     @Override
     public void actualizarParcialPorId(Producto producto) {
-       this.iProductoRepo.actualizarParcialPorId(producto);
+        Producto productoExistente = iProductoRepo.seleccionarPorId(producto.getId());
+        if (productoExistente == null) {
+            throw new RuntimeException("Producto no encontrado");
+        }
+
+        if (producto.getNombre() != null) {
+            productoExistente.setNombre(producto.getNombre());
+        }
+        if (producto.getCodigoBarras() != null) {
+            productoExistente.setCodigoBarras(producto.getCodigoBarras());
+        }
+        if (producto.getCategoria() != null) {
+            productoExistente.setCategoria(producto.getCategoria());
+        }
+        if (producto.getPrecio() != null) {
+            productoExistente.setPrecio(producto.getPrecio());
+        }
+        if (producto.getStock() != null) {
+            productoExistente.setStock(producto.getStock());
+        }
+        if (producto.getBodega() != null && producto.getBodega().getId() != null) {
+            productoExistente.setBodega(producto.getBodega());
+        }
+        if (producto.getImpuestos() != null && !producto.getImpuestos().isEmpty()) {
+            productoExistente.setImpuestos(producto.getImpuestos());
+        }
+        iProductoRepo.actualizarPorId(productoExistente);
+    }
+
+    @Override
+    public void actualizarParcial(ProductoTo productoTo) {
+        Producto productoParcial = ProductoMapper.toEntity(productoTo);
+        actualizarParcialPorId(productoParcial);
     }
 
     @Override
@@ -59,7 +91,6 @@ public class ProductoServi implements IProductoServi {
                 .map(impuestoDto -> {
                     ProductoImpuesto pi = new ProductoImpuesto();
                     pi.setProducto(producto);
-                    // Busca el impuesto gestionado por su ID
                     Impuesto impuesto = impuestoService.buscarPorId(impuestoDto.getId());
                     pi.setImpuesto(impuesto);
                     return pi;

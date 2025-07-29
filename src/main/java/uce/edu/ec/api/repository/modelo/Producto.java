@@ -3,6 +3,7 @@ package uce.edu.ec.api.repository.modelo;
 import java.math.BigDecimal;
 import java.util.List;
 
+import jakarta.validation.constraints.NotNull;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -34,7 +35,8 @@ public class Producto {
     private Integer stock;
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "prod_bode_id")
+    @JoinColumn(name = "prod_bode_id", nullable = false)
+    @NotNull(message = "La bodega es obligatoria")
     private Bodega bodega;
     
     @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

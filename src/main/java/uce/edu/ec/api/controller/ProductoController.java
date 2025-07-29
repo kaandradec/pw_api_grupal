@@ -8,6 +8,7 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
@@ -67,15 +68,22 @@ public class ProductoController {
                 return Response.status(Response.Status.BAD_REQUEST)
                     .entity("Datos del producto requeridos").build();
             }
-            
+
+            if (productoTo.getBodega() == null || productoTo.getBodega().getId() == null) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Debe seleccionar una bodega para el producto").build();
+            }
+
             Producto producto = ProductoMapper.toEntity(productoTo);
             this.iProductoServi.guardar(producto);
-            return Response.status(Response.Status.CREATED).build();
+            return Response.status(Response.Status.CREATED)
+                    .entity("Producto guardado correctamente").build();
         } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST)
                 .entity("Error al guardar: " + e.getMessage()).build();
         }
     }
+
 
     @POST
     @Path("/conimpuesto")
@@ -104,16 +112,42 @@ public class ProductoController {
                 return Response.status(Response.Status.BAD_REQUEST)
                     .entity("Datos del producto requeridos").build();
             }
-            
+
+            if (productoTo.getBodega() == null || productoTo.getBodega().getId() == null) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Debe seleccionar una bodega para el producto").build();
+            }
+
             productoTo.setId(id);
             Producto producto = ProductoMapper.toEntity(productoTo);
             this.iProductoServi.actualizarPorId(producto);
-            return Response.ok().build();
+            return Response.ok("Producto actualizado correctamente").build();
         } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST)
                 .entity("Error al actualizar: " + e.getMessage()).build();
         }
     }
+
+    @PATCH
+    @Path("/{id}")
+    public Response actualizarParcial(@PathParam("id") Integer id, ProductoTo productoTo) {
+        try {
+            if (productoTo == null) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Datos para actualización requeridos").build();
+            }
+            
+            productoTo.setId(id);
+            
+            iProductoServi.actualizarParcial(productoTo);
+            
+            return Response.ok("Producto actualizado parcialmente").build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                .entity("Error al actualizar parcialmente: " + e.getMessage()).build();
+        }
+    }
+
 
     @DELETE
     @Path("/{id}")

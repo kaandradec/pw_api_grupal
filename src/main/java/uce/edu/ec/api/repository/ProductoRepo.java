@@ -21,11 +21,12 @@ public class ProductoRepo implements IProductoRepo{
     public Producto seleccionarPorId(Integer id) {
         TypedQuery<Producto> query = entityManager.createQuery(
             "SELECT DISTINCT p FROM Producto p " +
+            "LEFT JOIN FETCH p.bodega " +
             "LEFT JOIN FETCH p.impuestos pi " +
             "LEFT JOIN FETCH pi.impuesto " +
             "WHERE p.id = :id", Producto.class);
         query.setParameter("id", id);
-        
+
         List<Producto> resultados = query.getResultList();
         return resultados.isEmpty() ? null : resultados.get(0);
     }
@@ -35,12 +36,14 @@ public class ProductoRepo implements IProductoRepo{
         if (codigoBarras == null || codigoBarras.trim().isEmpty()) {
             TypedQuery<Producto> myQuery = this.entityManager.createQuery(
                 "SELECT DISTINCT p FROM Producto p " +
+                "LEFT JOIN FETCH p.bodega " +
                 "LEFT JOIN FETCH p.impuestos pi " +
                 "LEFT JOIN FETCH pi.impuesto", Producto.class);
             return myQuery.getResultList();
         } else {
             TypedQuery<Producto> myQuery = this.entityManager.createQuery(
                 "SELECT DISTINCT p FROM Producto p " +
+                "LEFT JOIN FETCH p.bodega " +
                 "LEFT JOIN FETCH p.impuestos pi " +
                 "LEFT JOIN FETCH pi.impuesto " +
                 "WHERE p.codigoBarras = :codigoBarras", Producto.class);
