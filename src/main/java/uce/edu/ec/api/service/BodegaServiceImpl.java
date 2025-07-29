@@ -7,6 +7,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import uce.edu.ec.api.repository.IBodegaRepo;
+import uce.edu.ec.api.repository.modelo.Bodega;
 import uce.edu.ec.api.repository.modelo.dto.BodegaTo;
 import uce.edu.ec.api.service.mapper.BodegaMapper;
 
@@ -51,6 +52,17 @@ public class BodegaServiceImpl implements IBodegaService {
     public void guardar(BodegaTo bodega) {
         this.bodegaRepo.insertar(BodegaMapper.toEntity(bodega));
 
+    }
+
+    //metodos auxiliares 
+
+    public Bodega buscarEntidadPorId(Integer id) {
+        return bodegaRepo.seleccionarPorId(id);
+    }
+
+    @Transactional
+    public void actualizarEntidad(Bodega bodega) {
+        bodegaRepo.actualizar(bodega);
     }
 
 }

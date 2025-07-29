@@ -5,9 +5,11 @@ import java.net.URI;
 import java.util.List;
 
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
@@ -85,5 +87,23 @@ public class BodegaController {
         }
         return Response.ok(bodega).build();
     }
+
+    @PATCH
+@Path("/{id}")
+@Transactional
+public Response actualizarParcial(@PathParam("id") Integer id, BodegaTo parcial) {
+    BodegaTo existente = bodegaService.buscarPorId(id); 
+    if (existente == null) {
+        return Response.status(Response.Status.NOT_FOUND).build();
+    }
+
+    if (parcial.getCodigo() != null) existente.setCodigo(parcial.getCodigo());
+    if (parcial.getNombre() != null) existente.setNombre(parcial.getNombre());
+    if (parcial.getUbicacion() != null) existente.setUbicacion(parcial.getUbicacion());
+
+    bodegaService.actualizar(existente); 
+    return Response.ok().build();
+}
+
 
 }
