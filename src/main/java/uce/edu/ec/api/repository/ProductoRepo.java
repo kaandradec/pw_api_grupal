@@ -32,7 +32,7 @@ public class ProductoRepo implements IProductoRepo{
     }
 
     @Override
-    public List<Producto> seleccioarTodo(String codigoBarras) {
+    public List<Producto> seleccionarTodo(String codigoBarras) {
         if (codigoBarras == null || codigoBarras.trim().isEmpty()) {
             TypedQuery<Producto> myQuery = this.entityManager.createQuery(
                 "SELECT DISTINCT p FROM Producto p " +

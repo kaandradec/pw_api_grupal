@@ -27,7 +27,7 @@ public class ProductoServi implements IProductoServi {
 
     @Override
     public List<Producto> buscarTodo(String codigoBarras) {
-       return this.iProductoRepo.seleccioarTodo(codigoBarras);
+       return this.iProductoRepo.seleccionarTodo(codigoBarras);
     }
 
     @Override

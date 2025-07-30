@@ -3,12 +3,12 @@ package uce.edu.ec.api.repository.modelo;
 import jakarta.persistence.*;
 
 @Entity
-@Table
+@Table(name = "cliente")
 public class Cliente {
 
     @Id
     @Column(name="id_cliente")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(unique = true ,name = "cedula_cliente")
