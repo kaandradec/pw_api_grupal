@@ -89,21 +89,23 @@ public class BodegaController {
     }
 
     @PATCH
-@Path("/{id}")
-@Transactional
-public Response actualizarParcial(@PathParam("id") Integer id, BodegaTo parcial) {
-    BodegaTo existente = bodegaService.buscarPorId(id); 
-    if (existente == null) {
-        return Response.status(Response.Status.NOT_FOUND).build();
+    @Path("/{id}")
+    @Transactional
+    public Response actualizarParcial(@PathParam("id") Integer id, BodegaTo parcial) {
+        BodegaTo existente = bodegaService.buscarPorId(id);
+        if (existente == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        if (parcial.getCodigo() != null)
+            existente.setCodigo(parcial.getCodigo());
+        if (parcial.getNombre() != null)
+            existente.setNombre(parcial.getNombre());
+        if (parcial.getUbicacion() != null)
+            existente.setUbicacion(parcial.getUbicacion());
+
+        bodegaService.actualizar(existente);
+        return Response.ok().build();
     }
-
-    if (parcial.getCodigo() != null) existente.setCodigo(parcial.getCodigo());
-    if (parcial.getNombre() != null) existente.setNombre(parcial.getNombre());
-    if (parcial.getUbicacion() != null) existente.setUbicacion(parcial.getUbicacion());
-
-    bodegaService.actualizar(existente); 
-    return Response.ok().build();
-}
-
 
 }
