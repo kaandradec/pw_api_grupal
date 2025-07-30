@@ -10,6 +10,7 @@ import uce.edu.ec.api.repository.IFacturaRepo;
 import uce.edu.ec.api.repository.IClienteRepo;
 import uce.edu.ec.api.repository.IProductoRepo;
 import uce.edu.ec.api.repository.modelo.Factura;
+import uce.edu.ec.api.repository.modelo.Impuesto;
 import uce.edu.ec.api.repository.modelo.Cliente;
 import uce.edu.ec.api.repository.modelo.Producto;
 import uce.edu.ec.api.repository.modelo.dto.FacturaDetalleTo;
@@ -21,90 +22,95 @@ public class FacturaServiceImpl implements IFacturaService {
 
     @Inject
     private IFacturaRepo iFacturaRepo;
-    
+
     @Inject
     private IClienteRepo iClienteRepo;
-    
+
     @Inject
     private IProductoRepo iProductoRepo;
 
-     @Override
-public void crear(FacturaTo facturaTo) {
-    final BigDecimal IVA_PORCENTAJE = new BigDecimal("0.12");
+    @Override
+    public void crear(FacturaTo facturaTo) {
+        // final BigDecimal IVA_PORCENTAJE = new BigDecimal("0.12");
 
-    // Validar cliente
-    if (facturaTo.getCliente() == null || facturaTo.getCliente().getId() == null) {
-        throw new RuntimeException("La factura no tiene cliente asignado");
-    }
-
-    Cliente cliente = iClienteRepo.buscarPorId(facturaTo.getCliente().getId());
-    if (cliente == null) {
-        throw new RuntimeException("Cliente no encontrado");
-    }
-
-    // Validar y procesar detalles
-    List<FacturaDetalleTo> detalles = facturaTo.getDetalles();
-    if (detalles == null || detalles.isEmpty()) {
-        throw new RuntimeException("La factura no tiene detalles");
-    }
-
-    BigDecimal subtotal = BigDecimal.ZERO;
-    BigDecimal totalImpuestos = BigDecimal.ZERO;
-
-    for (FacturaDetalleTo detalleTo : detalles) {
-        if (detalleTo.getProducto() == null || detalleTo.getProducto().getId() == null) {
-            throw new RuntimeException("Detalle sin producto asignado");
+        // Validar cliente
+        if (facturaTo.getCliente() == null || facturaTo.getCliente().getId() == null) {
+            throw new RuntimeException("La factura no tiene cliente asignado");
         }
 
-        Producto producto = iProductoRepo.seleccionarPorId(detalleTo.getProducto().getId());
-        if (producto == null) {
-            throw new RuntimeException("Producto no encontrado: " + detalleTo.getProducto().getId());
+        Cliente cliente = iClienteRepo.buscarPorId(facturaTo.getCliente().getId());
+        if (cliente == null) {
+            throw new RuntimeException("Cliente no encontrado");
         }
 
-        // Validar stock
-        if ("PRODUCTO".equalsIgnoreCase(producto.getCategoria())) {
-            if (producto.getStock() < detalleTo.getCantidad()) {
-                throw new RuntimeException("Stock insuficiente para el producto: " + producto.getNombre());
+        // Validar y procesar detalles
+        List<FacturaDetalleTo> detalles = facturaTo.getDetalles();
+        if (detalles == null || detalles.isEmpty()) {
+            throw new RuntimeException("La factura no tiene detalles");
+        }
+
+        BigDecimal subtotal = BigDecimal.ZERO;
+        BigDecimal totalImpuestos = BigDecimal.ZERO;
+
+        for (FacturaDetalleTo detalleTo : detalles) {
+            if (detalleTo.getProducto() == null || detalleTo.getProducto().getId() == null) {
+                throw new RuntimeException("Detalle sin producto asignado");
             }
-            producto.setStock(producto.getStock() - detalleTo.getCantidad());
-            iProductoRepo.actualizarPorId(producto);
+
+            Producto producto = iProductoRepo.seleccionarPorId(detalleTo.getProducto().getId());
+            if (producto == null) {
+                throw new RuntimeException("Producto no encontrado: " + detalleTo.getProducto().getId());
+            }
+
+            // Validar stock
+            if ("PRODUCTO".equalsIgnoreCase(producto.getCategoria())) {
+                if (producto.getStock() < detalleTo.getCantidad()) {
+                    throw new RuntimeException("Stock insuficiente para el producto: " + producto.getNombre());
+                }
+                producto.setStock(producto.getStock() - detalleTo.getCantidad());
+                iProductoRepo.actualizarPorId(producto);
+            }
+
+            // Calcular subtotal y impuestos
+
+            // Se transforma el impuesto a valor de 0 a 1
+            BigDecimal impuestoPorcentaje = producto.getImpuestos().get(0).getImpuesto().getPorcentaje()
+                    .divide(BigDecimal.valueOf(100));
+
+            BigDecimal cantidad = BigDecimal.valueOf(detalleTo.getCantidad());
+            BigDecimal precioUnitario = producto.getPrecio();
+            BigDecimal subtotalDetalle = precioUnitario.multiply(cantidad);
+            detalleTo.setSubtotal(subtotalDetalle);
+
+            BigDecimal impuestosDetalle = subtotalDetalle.multiply(impuestoPorcentaje);
+            subtotal = subtotal.add(subtotalDetalle);
+            totalImpuestos = totalImpuestos.add(impuestosDetalle);
         }
 
-        // Calcular subtotal y impuestos
-        BigDecimal cantidad = BigDecimal.valueOf(detalleTo.getCantidad());
-        BigDecimal precioUnitario = producto.getPrecio();
-        BigDecimal subtotalDetalle = precioUnitario.multiply(cantidad);
-        detalleTo.setSubtotal(subtotalDetalle);
+        facturaTo.setSubtotal(subtotal);
+        facturaTo.setTotalImpuestos(totalImpuestos);
+        facturaTo.setTotal(subtotal.add(totalImpuestos));
 
-        BigDecimal impuestosDetalle = subtotalDetalle.multiply(IVA_PORCENTAJE);
-        subtotal = subtotal.add(subtotalDetalle);
-        totalImpuestos = totalImpuestos.add(impuestosDetalle);
+        // Establecer fecha de emisión si no viene desde frontend
+        if (facturaTo.getFechaEmision() == null) {
+            facturaTo.setFechaEmision(LocalDate.now());
+        }
+
+        Factura factura = FacturaMapper.convertir(facturaTo);
+        iFacturaRepo.insertar(factura);
     }
-
-    facturaTo.setSubtotal(subtotal);
-    facturaTo.setTotalImpuestos(totalImpuestos);
-    facturaTo.setTotal(subtotal.add(totalImpuestos));
-
-    // Establecer fecha de emisión si no viene desde frontend
-    if (facturaTo.getFechaEmision() == null) {
-        facturaTo.setFechaEmision(LocalDate.now());
-    }
-
-    Factura factura = FacturaMapper.convertir(facturaTo);
-    iFacturaRepo.insertar(factura);
-}
 
     @Override
     public void actualizar(FacturaTo facturaTo) {
         if (facturaTo.getId() == null) {
             throw new RuntimeException("ID de factura es requerido para actualizar");
         }
-        
+
         Factura facturaExistente = iFacturaRepo.buscarPorId(facturaTo.getId());
         if (facturaExistente == null) {
             throw new RuntimeException("Factura no encontrada");
         }
-        
+
         // Aplicar la misma lógica de validación y cálculo que en crear
         crear(facturaTo);
     }
@@ -137,4 +143,4 @@ public void crear(FacturaTo facturaTo) {
         Factura factura = iFacturaRepo.buscarPorNumeroDocumento(numeroDocumento);
         return FacturaMapper.convertir(factura);
     }
-} 
+}
