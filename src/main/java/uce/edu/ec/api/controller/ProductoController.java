@@ -49,6 +49,30 @@ public class ProductoController {
         }
     }
 
+      @GET
+@Path("/traer/{codigoBarras}")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
+public Response consultarPorCodBarras(@PathParam("codigoBarras") String codigoBarras) {
+    try {
+        Producto producto = iProductoServi.buscarPorCodBarras(codigoBarras);
+
+        if (producto == null) {
+            return Response.status(Response.Status.NOT_FOUND)
+                .entity("Producto no encontrado para código de barras: " + codigoBarras)
+                .build();
+        }
+
+        ProductoTo productoTo = ProductoMapper.toTo(producto);
+        return Response.ok(productoTo).build();
+
+    } catch (Exception e) {
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+            .entity("Error interno: " + e.getMessage())
+            .build();
+    }
+}
+
     @GET
     @Path("/{id}/completo")
     public Response consultarProductoCompleto(@PathParam("id") Integer id) {

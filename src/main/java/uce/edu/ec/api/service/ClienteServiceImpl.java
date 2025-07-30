@@ -43,4 +43,10 @@ public class ClienteServiceImpl implements IClienteService{
     public void eliminar(Integer id) {
         this.clienteRepo.eliminar(id);
     }
+
+     @Override
+    public Cliente buscarPorCedula(String cedula) {
+        return this.clienteRepo.buscarPorCedula(cedula);
+    }
 }
+

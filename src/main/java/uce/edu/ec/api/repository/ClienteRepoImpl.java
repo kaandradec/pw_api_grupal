@@ -46,4 +46,11 @@ public class ClienteRepoImpl implements IClienteRepo {
     public void eliminar(Integer id) {
         this.entityManager.remove(this.buscarPorId(id));
     }
+
+        @Override
+    public Cliente buscarPorCedula(String cedula) {
+        TypedQuery<Cliente> mQuery = this.entityManager.createQuery("SELECT c FROM  Cliente c Where c.cedula=: cedula", Cliente.class);
+        mQuery.setParameter("cedula", cedula);
+        return mQuery.getSingleResult();
+    }
 }

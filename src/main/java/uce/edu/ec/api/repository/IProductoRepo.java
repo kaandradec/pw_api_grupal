@@ -6,6 +6,7 @@ import uce.edu.ec.api.repository.modelo.Producto;
 
 public interface IProductoRepo {
     Producto seleccionarPorId(Integer id);
+    Producto seleccionarPorCodBarras(String codigoBarras);
     List<Producto> seleccionarTodo(String codigoBarras);
     void actualizarPorId(Producto producto);
     void actualizarParcialPorId(Producto producto);

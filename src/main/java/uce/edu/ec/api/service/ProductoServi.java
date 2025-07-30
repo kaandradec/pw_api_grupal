@@ -1,6 +1,5 @@
 package uce.edu.ec.api.service;
 
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,7 +17,7 @@ public class ProductoServi implements IProductoServi {
     @Inject
     private IProductoRepo iProductoRepo;
     @Inject
-    private ImpuestoService impuestoService; 
+    private ImpuestoService impuestoService;
 
     @Override
     public Producto buscarPorId(Integer id) {
@@ -27,12 +26,12 @@ public class ProductoServi implements IProductoServi {
 
     @Override
     public List<Producto> buscarTodo(String codigoBarras) {
-       return this.iProductoRepo.seleccionarTodo(codigoBarras);
+        return this.iProductoRepo.seleccionarTodo(codigoBarras);
     }
 
     @Override
     public void actualizarPorId(Producto producto) {
-       this.iProductoRepo.actualizarPorId(producto);
+        this.iProductoRepo.actualizarPorId(producto);
     }
 
     @Override
@@ -79,7 +78,7 @@ public class ProductoServi implements IProductoServi {
 
     @Override
     public void guardar(Producto producto) {
-      this.iProductoRepo.insertar(producto);
+        this.iProductoRepo.insertar(producto);
     }
 
     @Override
@@ -88,18 +87,23 @@ public class ProductoServi implements IProductoServi {
 
         if (productoTo.getImpuestos() != null && !productoTo.getImpuestos().isEmpty()) {
             List<ProductoImpuesto> productoImpuestos = productoTo.getImpuestos().stream()
-                .map(impuestoDto -> {
-                    ProductoImpuesto pi = new ProductoImpuesto();
-                    pi.setProducto(producto);
-                    Impuesto impuesto = impuestoService.buscarPorId(impuestoDto.getId());
-                    pi.setImpuesto(impuesto);
-                    return pi;
-                })
-                .collect(Collectors.toList());
+                    .map(impuestoDto -> {
+                        ProductoImpuesto pi = new ProductoImpuesto();
+                        pi.setProducto(producto);
+                        Impuesto impuesto = impuestoService.buscarPorId(impuestoDto.getId());
+                        pi.setImpuesto(impuesto);
+                        return pi;
+                    })
+                    .collect(Collectors.toList());
             producto.setImpuestos(productoImpuestos);
         }
 
         this.iProductoRepo.insertar(producto);
-        }
+    }
+
+    @Override
+    public Producto buscarPorCodBarras(String codBarras) {
+        return this.iProductoRepo.seleccionarPorCodBarras(codBarras);
+    }
 
 }

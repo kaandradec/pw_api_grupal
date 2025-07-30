@@ -75,4 +75,22 @@ public class ProductoRepo implements IProductoRepo{
     public void insertar(Producto producto) {
         this.entityManager.persist(producto);
     }
+
+      @Override
+    public Producto seleccionarPorCodBarras(String codigoBarras) {
+
+        TypedQuery<Producto> query = entityManager.createQuery(
+                "SELECT DISTINCT p FROM Producto p " +
+                        "LEFT JOIN FETCH p.bodega " +
+                        "LEFT JOIN FETCH p.impuestos pi " +
+                        "LEFT JOIN FETCH pi.impuesto " +
+                        "WHERE p.codigoBarras = :codigoBarras",
+                Producto.class);
+
+        query.setParameter("codigoBarras", codigoBarras);
+
+        List<Producto> resultados = query.getResultList();
+        return resultados.isEmpty() ? null : resultados.get(0);
+
+    }
 }

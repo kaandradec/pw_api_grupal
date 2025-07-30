@@ -2,9 +2,6 @@ package uce.edu.ec.api.controller;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
@@ -30,6 +27,15 @@ public class ClienteController {
     public Response consultarPorId(@PathParam("id") Integer id) {
         ClienteTo cliente = ClienteMapper.toTo(this.clienteService.buscarPorId(id));
        return Response.status(Response.Status.ACCEPTED).entity(cliente).build();
+    }
+
+    @Path("/traer/{cedula}")
+    @GET
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response consultarPorCedula(@PathParam("cedula") String cedula) {
+        ClienteTo cliente = ClienteMapper.toTo(this.clienteService.buscarPorCedula(cedula));
+       return Response.status(Response.Status.OK).entity(cliente).build();
     }
 
     @GET
